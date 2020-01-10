@@ -280,6 +280,9 @@
     "symfony/mime": {
         "version": "v4.3.9"
     },
+    "symfony/orm-pack": {
+        "version": "v1.0.7"
+    },
     "symfony/polyfill-intl-idn": {
         "version": "v1.13.1"
     },

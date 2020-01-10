@@ -22,18 +22,21 @@ class AppFixtures extends Fixture
     {  
         $role = new Role();
         $role->setLibelle("supadmin");
-
-
         $manager->persist($role);
 
-        $manager->flush();
         
-        $user = new User("supadmin");
+        $role1 = new Role();
+        $role1->setLibelle("admin");
+        $manager->persist($role1);
+
+
+        
+        $user = new User();
         $user->setUsername("khady");
         $user->setRole($role);
         $user->setPassword($this->encoder->encodePassword($user, "supadmin"));
-        $user->setRoles(json_encode(array("ROLE_SUPADMIN")));
-        $user->setPrenom("khady");
+        $user->setRoles(json_encode(array("ROLE_".$role->getLibelle())));
+        $user->setPrenom("dyatou");
         $user->setNom("sarr");
         $user->setIsactive(true);
 
