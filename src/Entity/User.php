@@ -4,13 +4,23 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
+ *  @ApiResource(
+ *  itemOperations={
+ *    "get",
+ *   "bloquer_admin"={
+ *     "method"="PUT",
+ *   "path"="/users/up/{id}",
+ *    "security"="is_granted(['ROLE_SUPADMIN'])",
+ *   "security_message"="erreur vous n'etes pas autorisez à effectuer cette operation"}
+ *  }
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ApiResource()
  */
-class User implements UserInterface
+class User implements AdvancedUserInterface 
 {
     /**
      * @ORM\Id()
@@ -83,11 +93,8 @@ class User implements UserInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles = [];
-
-        return array_unique($roles);
+       return [$this->role->getLibelle()];
+        
     }
 
     public function setRoles($roles): self
@@ -170,10 +177,26 @@ class User implements UserInterface
         return $this->isactive;
     }
 
+
     public function setIsactive(bool $isactive): self
     {
         $this->isactive = $isactive;
 
         return $this;
     }
+    public function isAccountNonExpired(){
+        return true;
+    }
+     public function isAccountNonLocked(){
+         return true;
+     }
+     public function isCredentialsNonExpired()
+     {
+         return true;
+     }
+     public function isEnabled(){
+         return $this->isactive;
+     }
+    
 }
+
