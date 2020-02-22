@@ -192,7 +192,7 @@ public function creation_compte_PartenaireExistent(Request $request, EntityManag
 
     // mis a joure le solde compte partenaire 
 
-     $NewSolde = ($values->mtt+$compte->getSolde());
+     $NewSolde = ($values->montant+$compte->getSolde());
                                         
      $compte->setSolde($NewSolde);
                 
@@ -263,7 +263,7 @@ public function faireDepot(Request $request, EntityManagerInterface $entityManag
         $depot = new Depot();
 
         $ReposCompte = $this->getDoctrine()->getRepository(Compte::class);
-            $compteDepot = $ReposCompte->findOneBy(array($values->id));
+            $compteDepot = $ReposCompte->find($values->id);
             $depot->setDateDepot($dateJours);
             $depot->setMontant($values->montant);
             $depot->setUser($userCreateur);
