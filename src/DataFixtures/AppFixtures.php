@@ -21,13 +21,22 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {  
         $role = new Role();
-        $role->setLibelle("supadmin");
+        $role->setLibelle("ROLE_SUPADMIN");
         $manager->persist($role);
 
         
         $role1 = new Role();
-        $role1->setLibelle("admin");
+        $role1->setLibelle("ROLE_ADMIN");
         $manager->persist($role1);
+
+        $role2 = new Role();
+        $role2->setLibelle("ROLE_CAISSIER");
+        $manager->persist($role2);
+
+        $role3 = new Role();
+        $role3->setLibelle("ROLE_PARTENAIRE");
+        $manager->persist($role3);
+
 
 
         
@@ -35,7 +44,7 @@ class AppFixtures extends Fixture
         $user->setUsername("khady");
         $user->setRole($role);
         $user->setPassword($this->encoder->encodePassword($user, "supadmin"));
-        $user->setRoles(json_encode(array("ROLE_".$role->getLibelle())));
+        $user->setRoles(json_encode(array($role->getLibelle())));
         $user->setPrenom("dyatou");
         $user->setNom("sarr");
         $user->setIsactive(true);

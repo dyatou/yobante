@@ -2,25 +2,19 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
-use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  *  @ApiResource(
- *  itemOperations={
- *    "get",
- *   "bloquer_admin"={
- *     "method"="PUT",
- *   "path"="/users/up/{id}",
- *    "security"="is_granted(['ROLE_SUPADMIN'])",
- *   "security_message"="erreur vous n'etes pas autorisez à effectuer cette operation"}
- *  }
- * )
+ *      attributes={"acces_control"="is_granted('POST_EDIT', subject)"}
+ *)
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User implements AdvancedUserInterface 
+class User implements UserInterface 
 {
     /**
      * @ORM\Id()
@@ -65,6 +59,29 @@ class User implements AdvancedUserInterface
      * @ORM\Column(type="boolean")
      */
     private $isactive;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Partenaire", inversedBy="users")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $partenaire;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Compte", mappedBy="user")
+     */
+    private $compte;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Depot", mappedBy="user")
+     */
+    private $depot;
+
+    public function __construct()
+    {
+        $this->compte = new ArrayCollection();
+        $this->depot = new ArrayCollection();
+        $this->isactive = true;
+    }
 
     public function getId(): ?int
     {
@@ -196,6 +213,80 @@ class User implements AdvancedUserInterface
      }
      public function isEnabled(){
          return $this->isactive;
+     }
+
+     public function getPartenaire(): ?Partenaire
+     {
+         return $this->partenaire;
+     }
+
+     public function setPartenaire(?Partenaire $partenaire): self
+     {
+         $this->partenaire = $partenaire;
+
+         return $this;
+     }
+
+     /**
+      * @return Collection|Compte[]
+      */
+     public function getCompte(): Collection
+     {
+         return $this->compte;
+     }
+
+     public function addCompte(Compte $compte): self
+     {
+         if (!$this->compte->contains($compte)) {
+             $this->compte[] = $compte;
+             $compte->setUser($this);
+         }
+
+         return $this;
+     }
+
+     public function removeCompte(Compte $compte): self
+     {
+         if ($this->compte->contains($compte)) {
+             $this->compte->removeElement($compte);
+             // set the owning side to null (unless already changed)
+             if ($compte->getUser() === $this) {
+                 $compte->setUser(null);
+             }
+         }
+
+         return $this;
+     }
+
+     /**
+      * @return Collection|Depot[]
+      */
+     public function getDepot(): Collection
+     {
+         return $this->depot;
+     }
+
+     public function addDepot(Depot $depot): self
+     {
+         if (!$this->depot->contains($depot)) {
+             $this->depot[] = $depot;
+             $depot->setUser($this);
+         }
+
+         return $this;
+     }
+
+     public function removeDepot(Depot $depot): self
+     {
+         if ($this->depot->contains($depot)) {
+             $this->depot->removeElement($depot);
+             // set the owning side to null (unless already changed)
+             if ($depot->getUser() === $this) {
+                 $depot->setUser(null);
+             }
+         }
+
+         return $this;
      }
     
 }
